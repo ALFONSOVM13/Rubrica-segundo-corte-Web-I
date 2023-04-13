@@ -1,81 +1,95 @@
-let allData = [];
-let uniqueGenders = [];
+let todosLosDatos = [];
+let generosUnicos = [];
 
 fetchData();
 
 async function fetchData() {
   try {
-    const response = await fetch('https://rickandmortyapi.com/api/character');
-    const data = await response.json();
-    allData = data.results;
-    uniqueGenders = [...new Set(allData.map((character) => character.gender))];
-    renderCards(allData); // muestra todos los elementos
-    renderGenders(uniqueGenders);
+    const respuesta = await fetch('https://rickandmortyapi.com/api/character');
+    const datos = await respuesta.json();
+    todosLosDatos = datos.results;
+    generosUnicos = [...new Set(todosLosDatos.map((personaje) => personaje.gender))];
+    renderizarTarjetas(todosLosDatos); // muestra todos los elementos
+    renderizarGeneros(generosUnicos);
   } catch (error) {
     console.error(error);
   }
 }
 
-function renderCards(data) {
-  const cardsContainer = document.querySelector('#cards-container');
-  cardsContainer.innerHTML = '';
-  data.slice(0, 12).forEach((character) => {
-    const card = document.createElement('div');
-    card.classList.add('col-lg-3', 'col-md-6', 'mb-4');
-    card.innerHTML = `
+
+function renderizarTarjetas(datos) {
+  const contenedorTarjetas = document.querySelector('#cards-container');
+  contenedorTarjetas.innerHTML = '';
+  datos.slice(0, 12).forEach((personaje) => {
+    const tarjeta = document.createElement('div');
+    tarjeta.classList.add('col-lg-3', 'col-md-6', 'mb-4');
+    tarjeta.innerHTML = `
       <div class="card h-100">
-        <img class="card-img-top" src="${character.image}" alt="${character.name}">
+        <img class="card-img-top" src="${personaje.image}" alt="${personaje.name}">
         <div class="card-body">
-          <h4 class="card-title">${character.name}</h4>
-          <p class="card-text"><strong>Gender:</strong> ${character.gender}</p>
-          <p class="card-text"><strong>Status:</strong> ${character.status}</p>
-          <p class="card-text"><strong>Species:</strong> ${character.species}</p>
+          <h4 class="card-title">${personaje.name}</h4>
+          <p class="card-text"><strong>Género:</strong> ${personaje.gender}</p>
+          <p class="card-text"><strong>Estado:</strong> ${personaje.status}</p>
+          <p class="card-text"><strong>Especie:</strong> ${personaje.species}</p>
         </div>
       </div>
     `;
-    cardsContainer.appendChild(card);
+    contenedorTarjetas.appendChild(tarjeta);
   });
 }
 
-function renderGenders() {
-  const selectElement = document.querySelector('#select-gender');
-  const genders = [...new Set(allData.map((character) => character.gender))];
-  if (!genders.includes('unknown')) {
-    genders.unshift('unknown');
+
+function renderizarGeneros() {
+  const selectElemento = document.querySelector('#select-gender');
+  const generos = [...new Set(todosLosDatos.map((personaje) => personaje.gender))];
+  if (!generos.includes('unknown')) {
+    generos.unshift('unknown');
   }
-  console.log(genders); // Agregado para verificar que 'unknown' se agrega correctamente
-  selectElement.innerHTML = `
+  console.log(generos); // Agregado para verificar que 'unknown' se agrega correctamente
+  selectElemento.innerHTML = `
     <option value="all">Todos los géneros</option>
-    ${genders.map((gender) => `<option value="${gender}">${gender}</option>`).join('')}
+    ${generos.map((genero) => `<option value="${genero}">${genero}</option>`).join('')}
   `;
 }
 
-function filter() {
-  const selectedGender = document.querySelector('#select-gender').value;
-  const searchQuery = document.querySelector('#search-input').value.toLowerCase();
-  let filteredData = [];
 
-  if (selectedGender === 'all') {
-    filteredData = allData;
+function filtrar() {
+  const generoSeleccionado = document.querySelector('#select-gender').value;
+  const consultaBusqueda = document.querySelector('#search-input').value.toLowerCase();
+  let datosFiltrados = [];
+
+  if (generoSeleccionado === 'all') {
+    datosFiltrados = todosLosDatos;
   } else {
-    filteredData = allData.filter((character) => character.gender === selectedGender);
+    datosFiltrados = todosLosDatos.filter((personaje) => personaje.gender === generoSeleccionado);
   }
 
-  if (searchQuery) {
-    filteredData = filteredData.filter((character) => character.name.toLowerCase().includes(searchQuery));
+  if (consultaBusqueda) {
+    datosFiltrados = datosFiltrados.filter((personaje) => personaje.name.toLowerCase().includes(consultaBusqueda));
   }
 
-  renderCards(filteredData);
+  renderizarTarjetas(datosFiltrados);
 }
 
-function reset() {
-  renderCards(allData);
+
+function reiniciar() {
+  renderizarTarjetas(todosLosDatos);
 }
 
-document.querySelector('#search-form').addEventListener('submit', (event) => {
-  event.preventDefault();
-  filter();
+document.querySelector('#search-form').addEventListener('submit', (evento) => {
+  evento.preventDefault();
+  filtrar();
 });
 
-document.querySelector('#search-input').addEventListener('input', filter);
-document.querySelector('#select-gender').addEventListener('change', filter);
+document.querySelector('#search-input').addEventListener('input', filtrar);
+document.querySelector('#select-gender').addEventListener('change', filtrar);
+
+// Navbar
+$(document).ready(function(){
+  $('.navbar-toggler').click(function(){
+    $('.navbar-collapse').toggleClass('show');
+  });
+});
+
+
+
